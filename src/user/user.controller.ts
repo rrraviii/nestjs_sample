@@ -3,7 +3,7 @@ import { User } from 'src/schema/user/user.schema';
 import { UserService } from './user.service';
 import { Request } from 'express';
 import { LoginRequestDTO } from './dto/LoginRequestDTO';
-import { UserEntity } from './user.entity';
+import { UserEntity } from './entity/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -32,8 +32,7 @@ export class UserController {
   async loginUser(@Req() request: Request): Promise<string> {
     const dto: LoginRequestDTO = request.body;
     console.log('what body', dto);
-    return ' Hello ';
-    //return await this.userSerivce.loginUser(request);
+    return await this.userSerivce.loginUser(dto);
   }
 
   @Get('/findAllUser')

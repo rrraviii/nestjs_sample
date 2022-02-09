@@ -2,6 +2,9 @@ import { IsString } from 'class-validator';
 
 export class CreateBrandDTO {
   @IsString()
+  readonly id: string;
+
+  @IsString()
   readonly name: string;
 
   @IsString()

@@ -1,7 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Req } from '@nestjs/common';
 import { Brand } from 'src/schema/brand/brand.schema';
-// import { Brand } from 'src/schema/brand/brand.schema';
+import { Request } from 'express';
 import { BrandService } from './brand.service';
+import { CreateBrandDTO } from './dto/create-brand.dto';
 
 @Controller('brand')
 export class BrandController {
@@ -17,5 +18,16 @@ export class BrandController {
   test(): string {
     console.log('브랜드 테스트 ---');
     return JSON.stringify('brand Test');
+  }
+
+  /**
+   * 1.브랜드를 등록하고
+   * 2.브랜드에 맞는 사용자를 추가한다.
+   */
+  @Post('/insertBrand')
+  async insertBrand(@Req() request: Request): Promise<string> {
+    console.log('브랜드 등록->');
+    const newBrand: CreateBrandDTO = request.body;
+    return await this.brandSerivce.insertBrand(newBrand);
   }
 }

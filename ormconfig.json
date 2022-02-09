@@ -4,8 +4,8 @@
     "port": 5432,
     "username": "postgres",
     "password": "adminpassword",
-    "database": "customdatabase",
-    "entities": ["dist/**/*.entity{.ts,.js}"],
-    "synchronize": true,
+    "database": "api",
+    "entities": ["dist/**/**/*.entity{.ts,.js}"],
+    "synchronize": true,                            
     "logging": true
 }
