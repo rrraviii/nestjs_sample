@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Brand, BrandSchema } from 'src/schema/brand/brand.schema';
 import { BrandController } from './brand.controller';
 import { BrandService } from './brand.service';
+import { BrandViewController } from './brandView.controller';
 import { BrandEntity } from './entity/bran.entity';
 import { BrandBlockKeywords } from './entity/brandBlockKeywords.entity';
 import { BrandChannel } from './entity/brandChannel.entity';
@@ -14,7 +15,7 @@ import { BrandKeywords } from './entity/brandKeywords.entity';
     MongooseModule.forFeature([{ name: Brand.name, schema: BrandSchema }]),
     TypeOrmModule.forFeature([BrandEntity, BrandBlockKeywords, BrandChannel, BrandKeywords]),
   ],
-  controllers: [BrandController],
+  controllers: [BrandController, BrandViewController],
   providers: [BrandService],
 })
 export class BrandModule {}

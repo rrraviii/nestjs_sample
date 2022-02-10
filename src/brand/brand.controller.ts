@@ -20,6 +20,13 @@ export class BrandController {
     return JSON.stringify('brand Test');
   }
 
+  @Post('/testInsert')
+  testInsert(@Req() request: Request): string {
+    console.log('body ', request.body);
+
+    return JSON.stringify('성공');
+  }
+
   /**
    * 1.브랜드를 등록하고
    * 2.브랜드에 맞는 사용자를 추가한다.
