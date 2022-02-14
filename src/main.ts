@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { join } from 'path';
+import { HttpExceptionFilter } from './common/http-exception.filter';
 
 // view 렌더링을 위해 -> @nestjs/platform-fastify,
 //yarn add fastify-static, point-of-view
