@@ -5,7 +5,7 @@ import { BrandKeywords } from './brandKeywords.entity';
 
 // 혹시 몰라서 만들어봄.
 export interface IBrand {
-  _id: string;
+  _id: number;
   id: string;
   name: string;
   logo: string;
@@ -22,7 +22,7 @@ export interface IBrand {
 @Entity('brand')
 export class BrandEntity {
   @PrimaryGeneratedColumn()
-  _id: string;
+  _id: number;
 
   // user Table 에 존재하는 brandId 컬럼과 매핑되는값.
   @Column()
@@ -88,7 +88,7 @@ export const createBrand = ({
 });
 
 export const emptyBrand = createBrand({
-  _id: '',
+  _id: 0,
   id: '',
   name: '',
   logo: '',

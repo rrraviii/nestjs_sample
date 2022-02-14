@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { CollectKeywords } from './collect.entity';
 import { CommunityIssueEntity } from './communityIssue.entity';
 import { Notis } from './noti.entity';
@@ -7,15 +7,16 @@ import { SnSIssueEntity } from './snsIssue.entity';
 
 @Entity('user')
 export class UserEntity {
-  @PrimaryColumn('varchar', {
-    length: 20,
-  })
-  _id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  userId: string;
 
   @Column()
   password: string;
 
-  @Column()
+  @Column({ default: 0 })
   role: number;
 
   @Column()
@@ -27,16 +28,16 @@ export class UserEntity {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ default: '' })
   phone: string;
 
-  @Column()
+  @Column({ type: 'boolean', default: false })
   doesReceiveEmail: boolean;
 
-  @Column()
+  @Column({ type: 'boolean', default: false })
   doesReceiveSMS: boolean;
 
-  @OneToMany(() => SnSIssueEntity, (sns) => sns.user)
+  @OneToMany((type) => SnSIssueEntity, (snsIssueFilter) => snsIssueFilter.userEntity)
   snsIssueFilter: SnSIssueEntity[];
 
   @OneToMany(() => CommunityIssueEntity, (community) => community.user)
@@ -51,6 +52,4 @@ export class UserEntity {
   @ManyToMany(() => UserRole, (userRole) => userRole.user)
   @JoinTable()
   userRoles: UserRole[];
-
-  stringAuthorities: string[];
 }

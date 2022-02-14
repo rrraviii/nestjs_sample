@@ -10,6 +10,5 @@ export class Notis {
   noti: string;
 
   @ManyToOne((type) => UserEntity, (user) => user.noti)
-  @JoinColumn({ name: '_id' })
   user: UserEntity;
 }

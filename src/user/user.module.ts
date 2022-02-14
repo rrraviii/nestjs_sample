@@ -12,13 +12,14 @@ import { UserEntity } from './entity/user.entity';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
+import { UserViewController } from './userView.controller';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     TypeOrmModule.forFeature([UserEntity, SnSIssueEntity, CommunityIssueEntity, CollectKeywords, UserRole, Privileges]),
   ],
-  controllers: [UserController],
+  controllers: [UserController, UserViewController],
   providers: [UserService, UserRepository],
 })
 export class UserModule {}

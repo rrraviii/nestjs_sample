@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Req } from '@nestjs/common';
 import { Brand } from 'src/schema/brand/brand.schema';
-import { Request } from 'express';
+import { request, Request } from 'express';
 import { BrandService } from './brand.service';
 import { CreateBrandDTO } from './dto/create-brand.dto';
+import { ResponseBrandDTO } from './dto/brand-response.dto';
+import { BrandEntity } from './entity/bran.entity';
 
 @Controller('brand')
 export class BrandController {
@@ -28,6 +30,15 @@ export class BrandController {
   }
 
   /**
+   * 브랜드 리스트 조회
+   * @returns
+   */
+  @Get('/fetchAllBrandList')
+  async fetchAllBrandList(): Promise<ResponseBrandDTO[]> {
+    return await this.brandSerivce.fetchAllBrandList();
+  }
+
+  /**
    * 1.브랜드를 등록하고
    * 2.브랜드에 맞는 사용자를 추가한다.
    */
@@ -36,5 +47,11 @@ export class BrandController {
     console.log('브랜드 등록->');
     const newBrand: CreateBrandDTO = request.body;
     return await this.brandSerivce.insertBrand(newBrand);
+  }
+
+  @Post('/detailBrandInfo')
+  async detailBrandInfo(@Req() request: Request): Promise<BrandEntity> {
+    console.log('req ,,,', request.body);
+    return this.brandSerivce.detailBrandInfo(Number(request.body.id));
   }
 }

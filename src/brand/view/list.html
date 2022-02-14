@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+          <div class="col-sm-12 mt-4">
+            <h5>브랜드 리스트 조회</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>key</th>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>logo</th>
+                        <th>color</th>
+                        <th>isActive</th>
+                        <th>crawlingIntervalSec</th>
+                        <th>crawlingDays</th>
+                        <th>hideServiceBrand</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+          </div>
+          <div class="col-sm-12 mt-2">
+            <a href="/brandView/insert" class="btn btn-primary">브랜드 등록</a>
+          </div>
+        </div>
+    </div>
+    
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function(){
+
+            $.ajax({
+                url : '/brand/fetchAllBrandList',
+                method : "GET",
+                success : ((data) => {
+                    let tbody = '';
+                    for(let i = 0; i < data.length; i++){
+                        tbody += '<tr onClick="fnHandleDetail('+data[i]._id+')">';
+                            tbody += `<td>${data[i]._id}</td>`;
+                            tbody += `<td>${data[i].id}</td>`;
+                            tbody += `<td>${data[i].name}</td>`;
+                            tbody += `<td>${data[i].logo}</td>`;
+                            tbody += `<td>${data[i].color}</td>`;
+                            tbody += `<td>${data[i].isActive === true ? 'true' : 'false'}</td>`;
+                            tbody += `<td>${data[i].crawlingIntervalSec}</td>`;
+                            tbody += `<td>${data[i].crawlingDays}</td>`;
+                            tbody += `<td>${data[i].hideServiceBrand}</td>`;
+                        tbody += '</tr>';
+                    }
+                    console.log(tbody);
+                    $('#tbody').html(tbody);
+                })
+            });
+        });
+
+        /**
+         * 상세 페이지
+         **/
+        function fnHandleDetail(_id){
+            location.href=`/brandView/${_id}`;
+        }
+
+    </script>
+</body>
+</html>

@@ -18,7 +18,6 @@ export class SnSIssueEntity {
   @Column()
   shareCount: number;
 
-  @ManyToOne((type) => UserEntity, (user) => user.snsIssueFilter)
-  @JoinColumn({ name: 'ref_id' })
-  user: UserEntity;
+  @ManyToOne(() => UserEntity, (userEntity) => userEntity.snsIssueFilter)
+  userEntity: UserEntity;
 }

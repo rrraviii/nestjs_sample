@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req } from '@nestjs/common';
+import { request, Request } from 'express';
 import { User } from 'src/schema/user/user.schema';
-import { UserService } from './user.service';
-import { Request } from 'express';
+import { InsertUserRequestDTO } from './dto/InsertUserRequestDTO';
 import { LoginRequestDTO } from './dto/LoginRequestDTO';
 import { UserEntity } from './entity/user.entity';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
@@ -40,9 +41,10 @@ export class UserController {
     return await this.userSerivce.findAllUser();
   }
 
-  @Get('/addUser')
-  async addUser(): Promise<string> {
-    return this.userSerivce.addUser();
+  @Post('/addUser')
+  async addUser(@Req() request: Request): Promise<string> {
+    const insertDTO: InsertUserRequestDTO = request.body;
+    return this.userSerivce.addUser(insertDTO);
   }
 
   @Get('/test')

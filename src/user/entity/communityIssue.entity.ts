@@ -19,6 +19,5 @@ export class CommunityIssueEntity {
   shareCount: number;
 
   @ManyToOne((type) => UserEntity, (user) => user.communityIssueFilter)
-  @JoinColumn({ name: 'ref_id' })
   user: UserEntity;
 }

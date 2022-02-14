@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/schema/user/user.schema';
 import { Repository } from 'typeorm';
+import { InsertUserRequestDTO } from './dto/InsertUserRequestDTO';
 import { LoginRequestDTO } from './dto/LoginRequestDTO';
 import { UserEntity } from './entity/user.entity';
 import { UserRepository } from './user.repository';
@@ -72,10 +73,13 @@ export class UserService {
   }
    */
 
-  async addUser(): Promise<string> {
-    console.log('addUser 확인중 ---->');
-    // const result = await this.userRdbRepository.insert({ id: 2, intra_id: '인트라아이디', nickname: '닉네임' });
-    // console.log(result);
+  async addUser(insertUserRequestDTO: InsertUserRequestDTO): Promise<string> {
+    console.log('addUser 확인중 ---->', insertUserRequestDTO);
+    let entity = new UserEntity();
+    entity = { ...entity, ...insertUserRequestDTO };
+    console.log('최종', entity);
+    const result = await this.userRdbRepository.insert({ ...entity });
+    console.log('추가 확인중', result);
     return '유저 추가 테스트';
   }
 }

@@ -10,6 +10,5 @@ export class CollectKeywords {
   keyword: string;
 
   @ManyToOne((type) => UserEntity, (user) => user.communityIssueFilter)
-  @JoinColumn({ name: 'ref_id' })
   user: UserEntity;
 }

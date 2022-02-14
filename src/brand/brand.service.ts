@@ -4,9 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Model } from 'mongoose';
 import { Brand, BrandDocument } from 'src/schema/brand/brand.schema';
 import { Repository } from 'typeorm';
+import { ResponseBrandDTO } from './dto/brand-response.dto';
 //import { Brand, BrandDocument } from 'src/schema/brand/brand.schema';
 import { CreateBrandDTO } from './dto/create-brand.dto';
-import { BrandEntity, createBrand, emptyBrand } from './entity/bran.entity';
+import { BrandEntity, emptyBrand } from './entity/bran.entity';
 
 @Injectable()
 export class BrandService {
@@ -22,8 +23,21 @@ export class BrandService {
   async getAll(): Promise<Brand[]> {
     const con = this.connection;
     const list = await this.brandModel.find().exec();
-    console.log('list 확인중', list);
+    console.log('list 확인중', list, con);
     return list;
+  }
+
+  /**
+   * 브랜드 전체 조회
+   * @returns
+   */
+  async fetchAllBrandList(): Promise<ResponseBrandDTO[]> {
+    const brandEntity = await this.brandRepository.find();
+
+    console.log('brandEntity', brandEntity);
+    const returnData: ResponseBrandDTO[] = [...brandEntity];
+    console.log('returnData', returnData);
+    return returnData;
   }
 
   /**
@@ -38,11 +52,15 @@ export class BrandService {
     createBrandEntity.name = newBrand.name;
     createBrandEntity.logo = newBrand.logo;
     createBrandEntity.color = newBrand.color;
-
-    console.log('-------------');
-    console.log(createBrandEntity);
-
     this.brandRepository.insert(createBrandEntity);
     return 'insert Brand';
+  }
+
+  /**
+   * 브랜드 상세정보
+   * @param id
+   */
+  async detailBrandInfo(id: number): Promise<BrandEntity> {
+    return await this.brandRepository.findOne({ _id: id });
   }
 }
