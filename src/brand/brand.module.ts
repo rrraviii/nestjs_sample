@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Brand, BrandSchema } from 'src/schema/brand/brand.schema';
@@ -14,6 +15,7 @@ import { BrandKeywords } from './entity/brandKeywords.entity';
   imports: [
     MongooseModule.forFeature([{ name: Brand.name, schema: BrandSchema }]),
     TypeOrmModule.forFeature([BrandEntity, BrandBlockKeywords, BrandChannel, BrandKeywords]),
+    JwtModule.register({ secret: 'PSJ', signOptions: { expiresIn: '300s' } }),
   ],
   controllers: [BrandController, BrandViewController],
   providers: [BrandService],

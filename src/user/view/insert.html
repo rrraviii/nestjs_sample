@@ -32,9 +32,15 @@
                 <label for="logo" class="form-label">비밀번호</label>
                 <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호" required>
               </div>
-               <div class="mb-3">
+              <div class="mb-3">
                 <label for="logo" class="form-label">브랜드 ID</label>
                 <select class="form-control" id="brandList">
+                    <option>선택</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="logo" class="form-label">사용자 권한</label>
+                <select class="form-control" id="roleList" multiple>
                     <option>선택</option>
                 </select>
               </div>
@@ -62,6 +68,18 @@
                 }
             });
 
+            $.ajax({
+              url : '/user/fetchUserRoleList',
+              method : 'GET',
+              success : function(data) {
+                let option = '';
+                    for(let i = 0; i < data.length; i++){
+                        option += '<option value='+data[i].id+'>'+data[i].roleName+'</option>';
+                    }
+                    $('#roleList').html(option);
+              }
+            })
+
             // 사용자 등록
             $('#insertBtn').on('click', () => {
                 const insertUserDTO = {
@@ -70,6 +88,7 @@
                     email : $('#email').val(),
                     password :$('#password').val(),
                     brandId : $('#brandList').val(),
+                    roleId : $('#roleList').val(),
                 }
                 $.ajax({
                     url : '/user/addUser',
@@ -77,6 +96,11 @@
                     data : insertUserDTO,
                     success : ((data) => {
                         console.log('리턴 데이터 ---', data);
+                        if(data === 'SUCCESS'){
+                          location.href="/userView/list";
+                        }else{
+                          alert('등록실패');
+                        }
                     })
                 })
             });

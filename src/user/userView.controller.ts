@@ -19,4 +19,10 @@ export class UserViewController {
     console.log('dirName', __dirname);
     response.type('text/html').send(readFileSync(join(__dirname, 'view/insert.html')).toString());
   }
+
+  @Get('roleManage')
+  roleManage(@Res() response: Response) {
+    console.log('dirName', __dirname);
+    response.type('text/html').send(readFileSync(join(__dirname, 'view/roleManage.html')).toString());
+  }
 }

@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req, SetMetadata, UseGuards } from '@nestjs/common';
 import { Brand } from 'src/schema/brand/brand.schema';
 import { request, Request } from 'express';
 import { BrandService } from './brand.service';
 import { CreateBrandDTO } from './dto/create-brand.dto';
 import { ResponseBrandDTO } from './dto/brand-response.dto';
 import { BrandEntity } from './entity/bran.entity';
+import { RolesGuard } from 'src/user/security/roles.guard';
+import { Roles } from 'src/user/decorator/role.decorator';
 
 @Controller('brand')
 export class BrandController {
@@ -34,6 +36,8 @@ export class BrandController {
    * @returns
    */
   @Get('/fetchAllBrandList')
+  @UseGuards(RolesGuard)
+  @SetMetadata('roles', ['admin'])
   async fetchAllBrandList(): Promise<ResponseBrandDTO[]> {
     return await this.brandSerivce.fetchAllBrandList();
   }

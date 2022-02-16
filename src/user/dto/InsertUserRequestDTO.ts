@@ -16,4 +16,7 @@ export class InsertUserRequestDTO {
 
   @IsString()
   readonly email: string;
+
+  @IsString()
+  readonly roleId: string[];
 }

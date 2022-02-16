@@ -1,12 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { join } from 'path';
-import { HttpExceptionFilter } from './common/http-exception.filter';
+import * as cookieParser from 'cookie-parser';
 
 // view 렌더링을 위해 -> @nestjs/platform-fastify,
 //yarn add fastify-static, point-of-view
 /**
+
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { join } from 'path';
+import { HttpExceptionFilter } from './common/http-exception.filter';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
   app.useStaticAssets({
@@ -28,6 +31,7 @@ bootstrap();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
