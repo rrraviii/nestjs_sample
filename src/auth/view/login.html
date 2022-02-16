@@ -45,9 +45,7 @@
                     success : ((data) => {
                         console.log('로그인 결과 ------');
                         console.log(data);
-
-                            
-
+                        location.href="/brandView/list";
                     }),
                     error : function( e ) {
                         if(e.status === 401){

@@ -20,6 +20,6 @@ import { UserViewController } from './userView.controller';
   ],
   controllers: [UserController, UserViewController],
   providers: [UserService, JwtStrategy],
-  exports: [UserService],
+  exports: [UserService, UserModule],
 })
 export class UserModule {}

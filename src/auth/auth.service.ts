@@ -28,7 +28,19 @@ export class AuthService {
     console.log('유저 롤 확인하자', userFind);
     const result = await this.userService.fetchUserInfoAndRoleInfo(userFind.id);
     console.log('유저롤 확인중 -- ', result);
-    const payload: Payload = { id: userFind.id, username: userFind.name, authorities: [...result.userRoles] };
+
+    const privilege = [];
+    result.userRoles.forEach((v) => {
+      v.privileges.forEach((j) => {
+        const pri = {
+          id: j.id,
+          name: j.name,
+        };
+        privilege.push(pri);
+      });
+    });
+
+    const payload: Payload = { id: userFind.id, username: userFind.name, authorities: [...result.userRoles], privileges: [...privilege] };
     return {
       accessToken: this.jwtService.sign(payload),
     };

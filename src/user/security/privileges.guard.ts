@@ -1,19 +1,39 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 
 // CanActivate -> 사용가능한지 여부
 @Injectable()
 export class PrivilegesGuard implements CanActivate {
   // 런타임시에 메타 데이터를 가져 올 수 있도록
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector, private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    console.log('여기서는 ----  select, delete, insert, create 조건 검색 해야함.');
+    console.log('PrivilegesGuard 호출 됩니다');
+    const privilege = this.reflector.get<string[]>('privilege', context.getHandler());
+    console.log('---------- > privilege');
+    console.log(privilege);
 
     // request 읽어오기
     const request = context.switchToHttp().getRequest();
+    // cookie 정보 저장
+    const token = request.cookies.accessToken;
+    const parseToken = this.jwtService.verify(token, { secret: 'PSJ' });
 
-    return true;
+    console.log('token 정보 ', parseToken);
+
+    let checked = false;
+    privilege.forEach((v) => {
+      parseToken.privileges.forEach((j) => {
+        if (v === j.name) {
+          console.log('같은경우 ---- j > ', j.name);
+          checked = true;
+          return;
+        }
+      });
+    });
+
+    return checked;
   }
 }

@@ -25,23 +25,16 @@ export class RolesGuard implements CanActivate {
     // cookie 정보 저장
     const token = request.cookies.accessToken;
     const parseToken = this.jwtService.verify(token, { secret: 'PSJ' });
-
-    console.log('--------------');
-    console.log(parseToken);
-    console.log('--------------');
     let checked = false;
     if (parseToken.authorities[0].privileges.length > 0) {
       roles.forEach((v) => {
         if (parseToken.authorities[0].roleId === v) {
-          console.log('j name : ', parseToken.authorities[0].roleId);
-          console.log('v name ', v);
           checked = true;
+          return;
         }
       });
     }
-
     console.log('checked -> ', checked);
     return checked;
-    // return user && user.authRole.map((v) => v.authority.some((role) => roles.includes(role.authorityName)));
   }
 }

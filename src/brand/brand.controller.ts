@@ -7,6 +7,7 @@ import { ResponseBrandDTO } from './dto/brand-response.dto';
 import { BrandEntity } from './entity/bran.entity';
 import { RolesGuard } from 'src/user/security/roles.guard';
 import { Roles } from 'src/user/decorator/role.decorator';
+import { PrivilegesGuard } from 'src/user/security/privileges.guard';
 
 @Controller('brand')
 export class BrandController {
@@ -38,6 +39,8 @@ export class BrandController {
   @Get('/fetchAllBrandList')
   @UseGuards(RolesGuard)
   @SetMetadata('roles', ['admin'])
+  @UseGuards(PrivilegesGuard)
+  @SetMetadata('privilege', ['INSERT'])
   async fetchAllBrandList(): Promise<ResponseBrandDTO[]> {
     return await this.brandSerivce.fetchAllBrandList();
   }
