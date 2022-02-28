@@ -1,18 +1,16 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { BrandBlockKeywords } from './brandBlockKeywords.entity';
-import { BrandChannel } from './brandChannel.entity';
 import { BrandKeywords } from './brandKeywords.entity';
+import { BrandMappingCategory } from './category-mapping-brand.entity';
+import { CompetitionKeywords } from './competition.entity';
+import { TrendKeywords } from './trend.entity';
 
-// 혹시 몰라서 만들어봄.
 export interface IBrand {
   _id: number;
   id: string;
   name: string;
-  logo: string;
-  color: string;
-  keywords: BrandKeywords[];
-  blockKeywords: BrandBlockKeywords[];
-  brandChannels: BrandChannel[];
+  brandKeywordList: BrandKeywords[]; // 자사브랜드
+  competitionKeywordList: CompetitionKeywords[]; // 경쟁사 키워드
+  trendKeywordList: TrendKeywords[]; // 시장키워드
   isActivate: boolean;
   crawlingIntervalSec: number;
   crawlingDays: number;
@@ -24,38 +22,34 @@ export class BrandEntity {
   @PrimaryGeneratedColumn()
   _id: number;
 
-  // user Table 에 존재하는 brandId 컬럼과 매핑되는값.
   @Column()
   id: string;
 
   @Column()
   name: string;
+  // category
+  @OneToMany(() => BrandMappingCategory, (brandMappingCategory) => brandMappingCategory.brand)
+  brandMappingCategory: BrandMappingCategory[];
 
-  @Column()
-  logo: string;
+  @OneToMany(() => BrandKeywords, (brand) => brand.brand)
+  brandKeywordList: BrandKeywords[];
 
-  @Column()
-  color: string;
+  @OneToMany(() => CompetitionKeywords, (competition) => competition.brand)
+  competitionKeywordList: CompetitionKeywords[];
 
-  @OneToMany(() => BrandKeywords, (keyword) => keyword.brand)
-  keywords: BrandKeywords[];
+  @OneToMany(() => TrendKeywords, (trend) => trend.brand)
+  trendKeywordList: TrendKeywords[];
 
-  @OneToMany(() => BrandBlockKeywords, (block) => block.brand)
-  blockKeywords: BrandBlockKeywords[];
-
-  @OneToMany(() => BrandChannel, (channel) => channel.brand)
-  brandChannels: BrandChannel[];
-
-  @Column()
+  @Column({ nullable: true })
   isActivate: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   crawlingIntervalSec: number;
 
-  @Column()
+  @Column({ nullable: true })
   crawlingDays: number;
 
-  @Column()
+  @Column({ nullable: true })
   hideServiceBrand: boolean;
 }
 
@@ -63,11 +57,10 @@ export const createBrand = ({
   _id,
   id,
   name,
-  logo,
-  color,
-  keywords,
-  blockKeywords,
-  brandChannels,
+  brandMappingCategory,
+  brandKeywordList,
+  competitionKeywordList,
+  trendKeywordList,
   isActivate,
   crawlingIntervalSec,
   crawlingDays,
@@ -76,11 +69,10 @@ export const createBrand = ({
   _id,
   id,
   name,
-  logo,
-  color,
-  keywords,
-  blockKeywords,
-  brandChannels,
+  brandMappingCategory,
+  brandKeywordList,
+  competitionKeywordList,
+  trendKeywordList,
   isActivate,
   crawlingIntervalSec,
   crawlingDays,
@@ -91,11 +83,10 @@ export const emptyBrand = createBrand({
   _id: 0,
   id: '',
   name: '',
-  logo: '',
-  color: '',
-  keywords: [],
-  blockKeywords: [],
-  brandChannels: [],
+  brandMappingCategory: [],
+  brandKeywordList: [],
+  competitionKeywordList: [],
+  trendKeywordList: [],
   isActivate: false,
   crawlingIntervalSec: 0,
   crawlingDays: 0,

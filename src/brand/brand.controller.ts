@@ -1,13 +1,14 @@
 import { Controller, Get, Post, Req, SetMetadata, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { Brand } from 'src/schema/brand/brand.schema';
-import { request, Request } from 'express';
-import { BrandService } from './brand.service';
-import { CreateBrandDTO } from './dto/create-brand.dto';
-import { ResponseBrandDTO } from './dto/brand-response.dto';
-import { BrandEntity } from './entity/bran.entity';
-import { RolesGuard } from 'src/user/security/roles.guard';
+import { Privileges } from 'src/user/decorator/privilege.decorator';
 import { Roles } from 'src/user/decorator/role.decorator';
-import { PrivilegesGuard } from 'src/user/security/privileges.guard';
+import { PrivilegeType } from 'src/user/security/privilege-type';
+import { RoleType } from 'src/user/security/role-type';
+import { BrandService } from './brand.service';
+import { ResponseBrandDTO } from './dto/brand-response.dto';
+import { CreateBrandDTO } from './dto/create-brand.dto';
+import { BrandEntity } from './entity/bran.entity';
 
 @Controller('brand')
 export class BrandController {
@@ -37,10 +38,8 @@ export class BrandController {
    * @returns
    */
   @Get('/fetchAllBrandList')
-  @UseGuards(RolesGuard)
-  @SetMetadata('roles', ['admin'])
-  @UseGuards(PrivilegesGuard)
-  @SetMetadata('privilege', ['INSERT'])
+  @Roles(RoleType.ADMIN)
+  @Privileges(PrivilegeType.INSERT)
   async fetchAllBrandList(): Promise<ResponseBrandDTO[]> {
     return await this.brandSerivce.fetchAllBrandList();
   }
@@ -53,6 +52,8 @@ export class BrandController {
   async insertBrand(@Req() request: Request): Promise<string> {
     console.log('브랜드 등록->');
     const newBrand: CreateBrandDTO = request.body;
+    console.log('new Brand !!!!!!!!!!!!');
+    console.log(newBrand);
     return await this.brandSerivce.insertBrand(newBrand);
   }
 

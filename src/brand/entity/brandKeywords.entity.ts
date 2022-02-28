@@ -4,7 +4,7 @@ import { BrandEntity } from './bran.entity';
 @Entity('brand_keyword')
 export class BrandKeywords {
   @PrimaryGeneratedColumn()
-  _id: string;
+  _id: number;
 
   @Column()
   name: string;

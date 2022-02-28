@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
     MongooseModule.forRoot('mongodb://localhost/social-monitor-prod'),
     TypeOrmModule.forRoot(),
     AuthModule,
+    CategoryModule,
   ],
   providers: [
     {

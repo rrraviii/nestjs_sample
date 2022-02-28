@@ -1,16 +1,14 @@
-import { BrandBlockKeywords } from '../entity/brandBlockKeywords.entity';
-import { BrandChannel } from '../entity/brandChannel.entity';
+import { Category } from 'src/category/entity/category.entity';
 import { BrandKeywords } from '../entity/brandKeywords.entity';
+import { CompetitionKeywords } from '../entity/competition.entity';
+import { TrendKeywords } from '../entity/trend.entity';
 
 export class ResponseBrandDTO {
   _id: number;
-  id: string;
   name: string;
-  logo: string;
-  color: string;
-  keywords: BrandKeywords[];
-  blockKeywords: BrandBlockKeywords[];
-  brandChannels: BrandChannel[];
+  brandKeywordList: BrandKeywords[];
+  competitionKeywordList: CompetitionKeywords[];
+  trendKeywordList: TrendKeywords[];
   isActivate: boolean;
   crawlingIntervalSec: number;
   crawlingDays: number;

@@ -14,11 +14,10 @@
         <div class="col-sm-12 mt-4">
           <p>브랜드 등록 </p>
           <hr />
-          <form method="post" action="/brand/insertBrand">
-            <div class="mb-3">
-              <label for="id" class="form-label">브랜드 아이디</label>
-              <input type="text" class="form-control" id="id" name="id" placeholder="로그인시 사용할 아이디">
-            </div>
+          <div class="mb-3">
+            <label for="name" class="form-label">ID</label>
+            <input type="text" class="form-control" id="id" name="id" placeholder="이름">
+          </div>
             <div class="mb-3">
               <label for="name" class="form-label">이름</label>
               <input type="text" class="form-control" id="name" name="name" placeholder="이름">
@@ -28,12 +27,22 @@
               <input type="text" class="form-control" id="logo" name="logo" placeholder="이름">
             </div>
 
-             <div class="mb-3">
-              <label for="logo" class="form-label">칼라</label>
-              <input type="text" class="form-control" id="color" name="color" placeholder="이름">
+            <div class="mb-3">
+              <label for="logo" class="form-label">자사 브랜드</label>
+              <input type="text" class="form-control" id="brandChannel" name="brandChannel" placeholder="Brand Channel">
+              <p>자사 브랜드 키워드 등록 : <span id="txtAddCollect"></span></p>
+            </div>
+            <div class="mb-3">
+              <label for="logo" class="form-label">경쟁사 키워드</label>
+              <input type="text" class="form-control" id="brandKeyword" name="brandKeyword" placeholder="brand">
+              <p>경쟁사 키워드 등록 : <span id="txtAddBrand"></span></p>
+            </div>
+            <div class="mb-3">
+              <label for="logo" class="form-label">시장 키워드</label>
+              <input type="text" class="form-control" id="trendKeywordList" name="trendKeywordList" placeholder="Trend">
+              <p>시장 키워드 등록 : <span id="txtAddTrend"></span></p>
             </div>
             <button type="button" id="insertBtn" class="btn btn-info">브랜드 등록</button>
-          </form>
         </div>
       </div>
     </div>
@@ -41,17 +50,76 @@
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
+        let global_brandChannels = [];
+        let global_brandKeyword = [];
+        let global_trendKeyword = [];
         $(document).ready(function(){
+
+            $('#brandChannel').on("keypress",function(key){
+              
+              if(key.keyCode==13) {
+                  const keyword = $('#brandChannel').val();
+                  console.log('엔터일때 ---->', keyword);
+
+                  global_brandChannels = [...global_brandChannels, keyword];
+                  if(global_brandChannels.length > 1){
+                    let textValue = $('#txtAddCollect').text();
+                    textValue = textValue + ',' + keyword;
+                    $('#txtAddCollect').text(textValue);
+                  }else{
+                    $('#txtAddCollect').text(keyword);
+                  }
+              }
+            });
+
+            // 시장 키워드
+            $('#brandKeyword').on("keypress",function(key){
+              if(key.keyCode==13) {
+                  const brandKeyword = $('#brandKeyword').val();
+                  console.log('엔터일때 ---->', brandKeyword);
+                  global_brandKeyword = [...global_brandKeyword, brandKeyword];
+                  if(global_brandKeyword.length > 1){
+                    let textValue = $('#txtAddBrand').text();
+                    textValue = textValue + ',' + brandKeyword;
+                    $('#txtAddBrand').text(textValue);
+                  }else{
+                    $('#txtAddBrand').text(brandKeyword);
+                  }
+              }
+            });
+
+            // 트렌드
+            $('#trendKeywordList').on("keypress",function(key){
+              if(key.keyCode==13) {
+                  const trendKeyword = $('#trendKeywordList').val();
+                  console.log('엔터일때 ---->', trendKeyword);
+                  global_trendKeyword = [...global_trendKeyword, trendKeyword];
+                  if(global_trendKeyword.length > 1){
+                    let textValue = $('#txtAddTrend').text();
+                    textValue = textValue + ',' + trendKeyword;
+                    $('#txtAddTrend').text(textValue);
+                  }else{
+                    $('#txtAddTrend').text(trendKeyword);
+                  }
+              }
+            });
+
+            
+
             $('#insertBtn').on('click', function(){
                 const insertBrand = {
                     id : $('#id').val(),
                     name : $('#name').val(),
-                    logo : $('#logo').val(),
-                    color : $('#color').val(),
+                    categoryInfo : {id : 4, name : 'Education' },
+                    brandKeywordList : global_brandChannels,
+                    competitionKeywordList : global_brandKeyword,
+                    trendKeywordList : global_trendKeyword
                 }
-                console.log('---------------------------');
-                console.log('insert Brand', insertBrand);
-                console.log('---------------------------');
+
+
+                console.log('-----------------@@@');
+                console.log(insertBrand);
+                console.log('-----------------@@@');
 
                 $.ajax({
                     url : '/brand/insertBrand',
@@ -59,7 +127,7 @@
                     method : "POST",
                     success : ((data) => {
                         console.log('등록 성공', data);
-                        location.href="/brandView/list";
+                        // location.href="/brandView/list";
                     })
                 });
             });

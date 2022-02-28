@@ -1,10 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BrandEntity } from './bran.entity';
-
-@Entity('brand_channel')
-export class BrandChannel {
+@Entity('trend_keywords')
+export class TrendKeywords {
   @PrimaryGeneratedColumn()
-  _id: string;
+  id: number;
 
   @Column()
   name: string;

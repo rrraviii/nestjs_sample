@@ -10,7 +10,6 @@ export class PrivilegesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector, private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    console.log('PrivilegesGuard 호출 됩니다');
     const privilege = this.reflector.get<string[]>('privilege', context.getHandler());
     console.log('---------- > privilege');
     console.log(privilege);
@@ -20,14 +19,10 @@ export class PrivilegesGuard implements CanActivate {
     // cookie 정보 저장
     const token = request.cookies.accessToken;
     const parseToken = this.jwtService.verify(token, { secret: 'PSJ' });
-
-    console.log('token 정보 ', parseToken);
-
     let checked = false;
     privilege.forEach((v) => {
       parseToken.privileges.forEach((j) => {
         if (v === j.name) {
-          console.log('같은경우 ---- j > ', j.name);
           checked = true;
           return;
         }
