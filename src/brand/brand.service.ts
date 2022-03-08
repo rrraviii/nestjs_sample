@@ -1,116 +1,112 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Model } from 'mongoose';
-import { Category, emptyCategory } from 'src/category/entity/category.entity';
-import { Brand, BrandDocument } from 'src/schema/brand/brand.schema';
-import { Repository, Transaction } from 'typeorm';
+import { plainToInstance } from 'class-transformer';
+import { Category } from 'src/category/entity/category.entity';
+import { CommonResponseDTO } from 'src/common/dto/CommonResponseDTO';
+import { KeyWordParseMappingBrand } from 'src/keyword/dto/keyword-parse-mapping-brand.dto';
+import { KeywordMappingBrand } from 'src/keyword/entity/keyword-mapping-brand.entity';
+import { Keyword } from 'src/keyword/entity/keyword.entity';
+import { EntityManager, Repository, Transaction, TransactionManager } from 'typeorm';
+import { BrandRequestDTO } from './dto/brand-request.dto';
 import { ResponseBrandDTO } from './dto/brand-response.dto';
-//import { Brand, BrandDocument } from 'src/schema/brand/brand.schema';
-import { CreateBrandDTO } from './dto/create-brand.dto';
 import { BrandEntity, emptyBrand } from './entity/bran.entity';
-import { BrandKeywords } from './entity/brandKeywords.entity';
-import { BrandMappingCategory } from './entity/category-mapping-brand.entity';
-import { CompetitionKeywords } from './entity/competition.entity';
-import { TrendKeywords } from './entity/trend.entity';
 
 @Injectable()
 export class BrandService {
-  //constructor(@InjectModel(Brand.name) private brandModel: Model<BrandDocument>) {}
   constructor(
-    @InjectModel(Brand.name) private brandModel: Model<BrandDocument>,
-    @InjectConnection() private connection: Connection,
-
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
-    @InjectRepository(BrandMappingCategory)
-    private brandMappingCategoryRepository: Repository<BrandMappingCategory>,
-    @InjectRepository(BrandKeywords)
-    private brandKeywordsRepository: Repository<BrandKeywords>,
-    @InjectRepository(CompetitionKeywords)
-    private competitionRepository: Repository<CompetitionKeywords>,
-    @InjectRepository(TrendKeywords)
-    private trendRepository: Repository<TrendKeywords>,
     @InjectRepository(BrandEntity)
-    private brandRepository: Repository<BrandEntity>
+    private brandRepository: Repository<BrandEntity>,
+    @InjectRepository(KeywordMappingBrand)
+    private keywordMappingBrand: Repository<KeywordMappingBrand>,
+    @InjectRepository(Keyword)
+    private keywordRepository: Repository<Keyword>
   ) {}
 
+  /**
   async getAll(): Promise<Brand[]> {
     const con = this.connection;
     const list = await this.brandModel.find().exec();
     console.log('list 확인중', list, con);
     return list;
   }
+   */
 
   /**
    * 브랜드 전체 조회
    * @returns
    */
-  async fetchAllBrandList(): Promise<ResponseBrandDTO[]> {
-    const brandEntity = await this.brandRepository.find();
+  async fetchAllBrandList(): Promise<BrandEntity[]> {
+    return await this.brandRepository.find({ relations: ['categories'] });
+  }
 
-    console.log('brandEntity', brandEntity);
-    const returnData: ResponseBrandDTO[] = [...brandEntity];
-    console.log('returnData', returnData);
-    return returnData;
+  /**
+   * 브랜드 한건 (키워드 포함)
+   * 조회시 brandId 파라미터로 받아야함. 현재는 테스트용도로 진행중.
+   * 
+   * 키워드 매핑테이블 조회시 
+   *  -   KeyWordParseMappingBrand { id: 1, brandId: 1, keywordId: 1 },
+      -   KeyWordParseMappingBrand { id: 2, brandId: 1, keywordId: 2 }
+   * @returns
+   */
+  async fetchBrandInfo(): Promise<BrandEntity> {
+    const brandEntity = await this.brandRepository.findOne({
+      where: { _id: 1 },
+    });
+
+    const responseDTO = plainToInstance(ResponseBrandDTO, brandEntity);
+    console.log('처음 response dto -=---', responseDTO);
+
+    const mappingData = await this.parseKeywordMappingBrandList(brandEntity._id);
+    const keywordIds = mappingData.map((v) => v.id);
+    // 교차테이블을 메인으로 조회를 하면 교차테이블 + Keyword or brand 가 나옴
+    const keywordList = await this.keywordMappingBrand.findByIds(keywordIds, { relations: ['keyword'] });
+
+    console.log('교차 테이블 조회 ---', keywordList);
+    const keywords = keywordList.map((v) => v.keyword);
+    console.log('키워드만 뽑은것 확인중 ---', keywords);
+
+    responseDTO.keyword = [...keywords];
+
+    console.log('brand 에서 keyword 최종 데이타 확인중 --- ', responseDTO);
+
+    return null;
+  }
+
+  /**
+   * 특정 브랜드 id들을 기준으로 brand 조회
+   * @param ids
+   * @returns
+   */
+  async fetchBrandList(ids: number[]): Promise<BrandEntity[]> {
+    return await this.brandRepository.findByIds(ids, { relations: ['categories'] });
   }
 
   /**
    * 브랜드 등록
    * @param newBrand
+   *  @TransactionManager() transactionManager?: EntityManager
    */
   @Transaction()
-  async insertBrand(newBrand: CreateBrandDTO): Promise<string> {
-    console.log('서비스 확인중', newBrand);
+  async insertBrand(brandData: BrandRequestDTO, @TransactionManager() transactionManager?: EntityManager): Promise<CommonResponseDTO> {
+    const categoryInfo = await this.categoryRepository.findOne({
+      where: { id: Number(brandData.categoryInfo.id) },
+    });
+    console.log('categoryInfo --', categoryInfo);
 
-    // 1.브랜드 등록
+    // 1.브랜드 등록 - createMethod 만들어서 하자
     const createBrandEntity = emptyBrand;
-    createBrandEntity.id = newBrand.id;
-    createBrandEntity.name = newBrand.name;
-    createBrandEntity.crawlingDays = newBrand.crawlingDays;
+    createBrandEntity.brandId = brandData.brandId;
+    createBrandEntity.name = brandData.name;
+    createBrandEntity.color = brandData.color;
+    createBrandEntity.categories = [categoryInfo];
 
-    console.log('[1].brand --> ');
-    console.log(createBrandEntity);
+    const newBrand = { ...createBrandEntity };
+    const saveBrand = await this.brandRepository.save(newBrand);
 
-    const saveBrandEntity = await this.brandRepository.save(createBrandEntity);
-
-    // 2.카테고리
-    const tmpCategory = emptyCategory;
-    tmpCategory.id = newBrand.categoryInfo.id;
-    tmpCategory.name = newBrand.categoryInfo.name;
-
-    // 2.2. 카테고리 - 브랜드 매핑 테이블
-    const parseBrandMappingCategory = new BrandMappingCategory();
-    parseBrandMappingCategory.brand = saveBrandEntity;
-    parseBrandMappingCategory.category = tmpCategory;
-    this.brandMappingCategoryRepository.save(parseBrandMappingCategory);
-
-    const parseBrandKeyword = newBrand.brandKeywordList.map((v) => {
-      const tmp = new BrandKeywords();
-      tmp.name = v;
-      tmp.brand = saveBrandEntity;
-      return tmp;
-    });
-    this.brandKeywordsRepository.save(parseBrandKeyword);
-
-    // 경쟁사 키워드
-    const parseCompetionKeyword = newBrand.competitionKeywordList.map((v) => {
-      const tmp = new CompetitionKeywords();
-      tmp.name = v;
-      tmp.brand = saveBrandEntity;
-      return tmp;
-    });
-    this.competitionRepository.save(parseCompetionKeyword);
-
-    const parseTrendKeyword = newBrand.trendKeywordList.map((v) => {
-      const tmp = new TrendKeywords();
-      tmp.name = v;
-      tmp.brand = saveBrandEntity;
-      return tmp;
-    });
-    this.trendRepository.save(parseTrendKeyword);
-
-    return 'insert Brand';
+    const response: CommonResponseDTO = saveBrand._id > 0 ? { status: 200, result: 'OK' } : { status: 500, result: 'FAIL' };
+    return response;
   }
 
   /**
@@ -119,7 +115,7 @@ export class BrandService {
    */
   async detailBrandInfo(id: number): Promise<BrandEntity> {
     const brandDetailInfo = await this.brandRepository.findOne({
-      relations: ['brandKeywordList', 'trendKeywordList', 'competitionKeywordList', 'brandMappingCategory'],
+      relations: ['categories'],
       where: { _id: id },
     });
 
@@ -127,5 +123,23 @@ export class BrandService {
     console.log(brandDetailInfo);
 
     return brandDetailInfo;
+  }
+
+  /**
+   * 교차테이블에서 BrandId 기준으로 데이터 조회
+   * @param idList
+   * @returns
+   */
+  async parseKeywordMappingBrandList(id: number): Promise<KeyWordParseMappingBrand[]> {
+    const keyWordParseMappingBrand = await this.keywordMappingBrand
+      .createQueryBuilder()
+      .select('KeywordMappingBrand.id', 'id')
+      .addSelect('KeywordMappingBrand.brandId ', 'brandId')
+      .addSelect('KeywordMappingBrand.keywordId', 'keywordId')
+      //.whereInIds(keyList).where("id IN (:id)", { id: request.ids })
+      .where('KeywordMappingBrand.brandId IN (:id)', { id: id })
+      .getRawMany<KeyWordParseMappingBrand>();
+
+    return plainToInstance(KeyWordParseMappingBrand, keyWordParseMappingBrand);
   }
 }

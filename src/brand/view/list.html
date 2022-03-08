@@ -16,15 +16,11 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>key</th>
-                        <th>id</th>
+                        <th>brandId</th>
                         <th>name</th>
                         <th>logo</th>
                         <th>color</th>
                         <th>isActive</th>
-                        <th>crawlingIntervalSec</th>
-                        <th>crawlingDays</th>
-                        <th>hideServiceBrand</th>
                     </tr>
                 </thead>
                 <tbody id="tbody"></tbody>
@@ -45,17 +41,19 @@
                 url : '/brand/fetchAllBrandList',
                 method : "GET",
                 success : ((data) => {
+
+                    console.log(data);
+
                     let tbody = '';
                     for(let i = 0; i < data.length; i++){
                         tbody += '<tr onClick="fnHandleDetail('+data[i]._id+')">';
-                            tbody += `<td>${data[i]._id}</td>`;
+                            tbody += `<td>${data[i].brandId}</td>`;
                             tbody += `<td>${data[i].name}</td>`;
-                            tbody += `<td>${data[i].logo}</td>`;
                             tbody += `<td>${data[i].color}</td>`;
                             tbody += `<td>${data[i].isActive === true ? 'true' : 'false'}</td>`;
-                            tbody += `<td>${data[i].crawlingIntervalSec}</td>`;
-                            tbody += `<td>${data[i].crawlingDays}</td>`;
-                            tbody += `<td>${data[i].hideServiceBrand}</td>`;
+                            
+                            //tbody += `<td>${data[i].crawlingDays}</td>`;
+                            //tbody += `<td>${data[i].hideServiceBrand}</td>`;
                         tbody += '</tr>';
                     }
                     console.log(tbody);

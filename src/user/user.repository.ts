@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/schema/user/user.schema';
 
+/**
 @Injectable()
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
@@ -18,3 +19,4 @@ export class UserRepository {
     return user[0];
   }
 }
+ */

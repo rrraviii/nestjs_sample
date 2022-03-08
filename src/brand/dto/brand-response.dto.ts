@@ -1,16 +1,19 @@
-import { Category } from 'src/category/entity/category.entity';
-import { BrandKeywords } from '../entity/brandKeywords.entity';
-import { CompetitionKeywords } from '../entity/competition.entity';
-import { TrendKeywords } from '../entity/trend.entity';
+import { PartialType } from '@nestjs/mapped-types';
+import { Expose } from 'class-transformer';
+import { CommonDTO } from 'src/common/dto/CommonDTO';
+import { Keyword } from 'src/keyword/entity/keyword.entity';
 
-export class ResponseBrandDTO {
+export class ResponseBrandDTO extends PartialType(CommonDTO) {
+  @Expose()
   _id: number;
+  @Expose()
+  brandId: string;
+  @Expose()
   name: string;
-  brandKeywordList: BrandKeywords[];
-  competitionKeywordList: CompetitionKeywords[];
-  trendKeywordList: TrendKeywords[];
+  @Expose()
+  color: string;
+  @Expose()
   isActivate: boolean;
-  crawlingIntervalSec: number;
-  crawlingDays: number;
-  hideServiceBrand: boolean;
+  @Expose()
+  keyword: Keyword[];
 }

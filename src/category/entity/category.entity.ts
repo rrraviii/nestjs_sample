@@ -1,5 +1,6 @@
-import { BrandMappingCategory } from 'src/brand/entity/category-mapping-brand.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+// import { BrandMappingCategory } from 'src/brand/entity/category-mapping-brand.entity';
+import { BrandEntity } from 'src/brand/entity/bran.entity';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('category')
 export class Category {
@@ -10,8 +11,8 @@ export class Category {
   name: string;
 
   // category
-  @OneToMany(() => BrandMappingCategory, (brandMappingCategory) => brandMappingCategory.category)
-  brand: BrandMappingCategory[];
+  @ManyToMany((type) => BrandEntity, (brand) => brand.categories)
+  brand: BrandEntity[];
 }
 
 export const createCategory = ({ id, name, brand }: Category): Category => ({

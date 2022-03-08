@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, Repository, Transaction } from 'typeorm';
 import { AddRolePrivilegeDTO } from './dto/add-rolePrivilege.dto';
 import { InsertUserRequestDTO } from './dto/InsertUserRequestDTO';
 import { LoginRequestDTO } from './dto/LoginRequestDTO';
@@ -97,6 +97,9 @@ export class UserService {
    * @returns
    */
   async addUser(insertUserRequestDTO: InsertUserRequestDTO): Promise<string> {
+    console.log('@@@@@@@ 유저 등록시 ----');
+    console.log(insertUserRequestDTO);
+
     let findUser = new UserEntity();
     findUser = { ...findUser, ...insertUserRequestDTO };
     let entity = new UserEntity();
